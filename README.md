@@ -9,4 +9,20 @@ Requirements
 * Be able to reload the previous grid.
 * Use Database to reload previous grid.
 
+Technologies Use
 
+FrontEnd
+* Electron 
+* some sort of CSS styling
+
+Backend
+* Golang
+* MongoDB
+* Redis for caching 
+
+
+
+Temporary UI
+
+
+![UI Diagram  drawio](https://user-images.githubusercontent.com/16285362/174956281-582d7564-b2c9-4507-9525-3f18a7fa6d94.png)
