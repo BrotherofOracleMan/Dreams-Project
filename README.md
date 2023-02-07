@@ -1,13 +1,10 @@
 # Hot Dog
 Project for me to learn new technologies on my free time.
 
-Website to detect if a photo has a hot dog in it or it
-
+Django, Vue, Databases(Sql)
 
 ToDo List
-- [ ] Learn Vue.js
-- [ ] Create Vue front end
-- [ ] Architect Drop in Photo Architecture for OpenCV 
-- [ ] Deploy to Docker and Kubernetes
-- [ ] Create a CI/CD pipeline for this 
-- [ ] Rearchitect monolith to microservices.
+- [ ] Create the webscraper that loads data from https://www.dreambank.net/random_sample.cgi?series=izzy-all&min=50&max=300&n=100 into a sqllite database
+- [ ] Design the Django REST API that queries this database
+- [ ] Design the front end of the program
+- [ ] Figure out how to search based on different kinds of searches.
