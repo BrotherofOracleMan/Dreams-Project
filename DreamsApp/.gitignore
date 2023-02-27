@@ -115,7 +115,7 @@ coverage.xml
 # Django stuff:
 *.log
 *.pot
-DreamsApp/__pycache__/settings.cpython-38.pyc
+DreamsApp/__pycache__/
 *.egg-info/
 .installed.cfg
 *.egg

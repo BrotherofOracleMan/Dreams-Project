@@ -1,7 +1,6 @@
 import scrapy
 import re
-from scrapy.linkextractors import LinkExtractor
-from scrapy.spiders import CrawlSpider, Rule
+from scrapy_app.items import DreamItem
 
 #Todo: transform this to CrawlSpider
 class DreamcrawlerSpider(scrapy.Spider):
@@ -29,11 +28,12 @@ class DreamcrawlerSpider(scrapy.Spider):
                
 
     def parse(self, response):
-        data = []
+        dream_item = DreamItem()
         for date, quote in self.quote_generator(response.css('body span::text').getall()):
-            data.append(self.generate_id_date_string(date,quote))
-        print(data[-1])
-        yield
-        {
-            'data': data,
-        }
+            id,date_data,dream_string = self.generate_id_date_string(date,quote)
+            #print(id)
+            dream_item['id'] = int(id)
+            dream_item['date'] = [date_data]
+            dream_item['quote'] = dream_string[:]
+            yield  dream_item
+
