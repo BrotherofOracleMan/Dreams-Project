@@ -5,29 +5,45 @@
 
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
 import psycopg2
+from dotenv import load_dotenv
+import os
 
 class DreamAppPipeline:
     def __init__(self) -> None:
-        hostname = '' #fill in using os env
-        username='' #fill in using os env
-        password='' # fill in using os env
-        database = ''#fill in using os env
+        load_dotenv()
+        hostname = os.environ['hostname'] #fill in using os env
+        username= os.environ['username'] #fill in using os env
+        password= os.environ['password'] # fill in using os env
+        database = os.environ['database'] #fill in using os env
 
         self.connection = psycopg2.connect(host=hostname, user= username, password=password,dbname= database)
 
         self.cur = self.connection.cursor()
 
-        self.cur.execute(
-        """
+        self.cur.execute("""
         CREATE TABLE if not exists dreams(
-            id serial PRIMARY KEY,
-            date
-        )
-        """
-        )
+            id text PRIMARY KEY,
+            date text,
+            quote text
+        );
+        """)
 
         pass
     def process_item(self, item, spider):
+        self.cur.execute("select * from dreams where id = %s;",(item['id'],))
+        result = self.cur.fetchone()
+        if result:
+            spider.logger.warn("Item already in database: %s" % item['id'])
+        else:
+            self.cur.execute("""INSERT INTO dreams(id,date,quote) VALUES(%s,%s,%s);""",(
+                item["id"],
+                item["date"],
+                item["quote"]
+            ))
+            self.connection.commit()
         return item
+
+    def close_spider(self, spider):
+        self.cur.close()
+        self.connection.close()
