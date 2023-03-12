@@ -22,7 +22,7 @@ class DreamAppPipeline:
         self.cur = self.connection.cursor()
 
         self.cur.execute("""
-        CREATE TABLE if not exists dreams(
+        CREATE TABLE if not exists main_dream(
             id text PRIMARY KEY,
             date text,
             quote text
@@ -31,12 +31,12 @@ class DreamAppPipeline:
 
         pass
     def process_item(self, item, spider):
-        self.cur.execute("select * from dreams where id = %s;",(item['id'],))
+        self.cur.execute("select * from main_dream where id = %s;",(item['id'],))
         result = self.cur.fetchone()
         if result:
             spider.logger.warn("Item already in database: %s" % item['id'])
         else:
-            self.cur.execute("""INSERT INTO dreams(id,date,quote) VALUES(%s,%s,%s);""",(
+            self.cur.execute("""INSERT INTO main_dream(id,date,quote) VALUES(%s,%s,%s);""",(
                 item["id"],
                 item["date"],
                 item["quote"]
