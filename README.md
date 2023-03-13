@@ -8,9 +8,9 @@ Other technologies: Kubernetes, Docker , NoSql DataBase or MongoDB
 Reference: https://alioguzhan.medium.com/how-to-use-scrapy-with-django-application-c16fabd0e62e
 
 ### ToDo List for Backend
-- [ ] Create a spider that writes data to a database. Make sure to use a websocket to communicate with Django.
+- [X] Create a spider that writes data to a database.
 - [ ] Design the Django REST API that fetches the data from DataBase
-- [ ] Make sure the Django View triggers the crawl.
+- [ ] Make sure the Django View triggers the crawl through a websocket
 - [ ] Implement different kind of searches with the database based on dates and word
 - [ ] Implement creating a dream and inserting the dream.
 
@@ -30,4 +30,23 @@ Reference: https://alioguzhan.medium.com/how-to-use-scrapy-with-django-applicati
 
 -TodoList
 
-Secondary Prototype 
+###REST API
+
+* Make sure all REST APIs return JSON through serialization(major)
+* Make sure all REST APIs have graceful error handling (major)
+* Make sure all REST APIs have some sort of user authentication (todo for later, not in production application)
+
+GET APIS
+HTTP GET /v1/id/{id}
+HTTP GET /v1/quote/contain_string
+HTTP GET /v1/before_date/{date}
+HTTP GET /v1/after_date/{date}
+
+POST
+HTTP POST /v1/new_entry (data will be defined in the content body)
+
+DELETE
+HTTP POST /v1/delete_entry (data will be defined in the content body)
+
+
+
