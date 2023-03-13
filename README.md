@@ -30,7 +30,7 @@ Reference: https://alioguzhan.medium.com/how-to-use-scrapy-with-django-applicati
 
 -TodoList
 
-###REST API
+### REST API
 
 * Make sure all REST APIs return JSON through serialization(major)
 * Make sure all REST APIs have graceful error handling (major)
