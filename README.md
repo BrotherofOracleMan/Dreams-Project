@@ -37,16 +37,16 @@ Reference: https://alioguzhan.medium.com/how-to-use-scrapy-with-django-applicati
 * Make sure all REST APIs have some sort of user authentication (todo for later, not in production application)
 
 GET APIS
-HTTP GET /v1/id/{id}
-HTTP GET /v1/quote/contain_string
-HTTP GET /v1/before_date/{date}
-HTTP GET /v1/after_date/{date}
+* HTTP GET /v1/id/{id}
+* HTTP GET /v1/quote/contain_string
+* HTTP GET /v1/before_date/{date}
+* HTTP GET /v1/after_date/{date}
 
 POST
-HTTP POST /v1/new_entry (data will be defined in the content body)
+* HTTP POST /v1/new_entry (data will be defined in the content body)
 
 DELETE
-HTTP POST /v1/delete_entry (data will be defined in the content body)
+* HTTP POST /v1/delete_entry (data will be defined in the content body)
 
 
 
