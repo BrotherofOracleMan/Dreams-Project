@@ -16,10 +16,38 @@ def dream_list(request):
         return JsonResponse(serializer.data, safe=False)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
+        print(data)
         serializer = DreamSerializer(data= data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors ,status=400)
+
+@csrf_exempt
+def dream_detail(request, id):
+    """
+    Retrieve, update or delete
+    """
+    try:
+        dream =  Dream.objects.get(id = id)
+    except Dream.DoesNotExist:
+        return HttpResponse(status=404)
+    
+    if request.method == 'GET':
+        serializer = DreamSerializer(dream)
+        return JsonResponse(serializer.data)
+    elif request.method == 'PUT':
+        data = JSONParser.parse(request)
+        serializer = DreamSerializer(dream, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JSONParser(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+    elif request.method == 'DELETE':
+        dream.delete()
+        return HttpResponse(status= 204)
+    
+
+
     
     
