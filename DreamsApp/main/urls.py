@@ -1,7 +1,9 @@
 from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 from main import views
 
 urlpatterns = [
-    path('dream/', views.dream_list),
-    path('dream/<id>', views.dream_detail)
+    path('dream/v1/id/<id>', views.ListDreambyID.as_view())
 ]
+
+urlpatterns= format_suffix_patterns(urlpatterns)

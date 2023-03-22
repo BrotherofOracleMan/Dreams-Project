@@ -1,53 +1,34 @@
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.http import Http404
 from main.models import Dream
 from main.serializers import DreamSerializer
 
-# Create your views here.
-@csrf_exempt
-def dream_list(request):
-    """
-        List all code snippets, or create a new snippet.
-    """
-    if request.method == 'GET':
-        dreams = Dream.objects.all()
-        serializer = DreamSerializer(dreams, many = True)
-        return JsonResponse(serializer.data, safe=False)
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        print(data)
-        serializer = DreamSerializer(data= data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors ,status=400)
+#HTTP GET /v1/id/{id}
+class ListDreambyID(APIView):
+    def get_object(self, id):
+        """
+        View to get an user just by id
+        """
+        try:
+            return Dream.objects.get(id=id)
+        except Dream.DoesNotExist:
+            return Http404
 
-@csrf_exempt
-def dream_detail(request, id):
-    """
-    Retrieve, update or delete
-    """
-    try:
-        dream =  Dream.objects.get(id = id)
-    except Dream.DoesNotExist:
-        return HttpResponse(status=404)
-    
-    if request.method == 'GET':
+    def get(self, request, id, format =None):
+        dream = self.get_object(id)
         serializer = DreamSerializer(dream)
-        return JsonResponse(serializer.data)
-    elif request.method == 'PUT':
-        data = JSONParser.parse(request)
-        serializer = DreamSerializer(dream, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JSONParser(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-    elif request.method == 'DELETE':
-        dream.delete()
-        return HttpResponse(status= 204)
-    
+        return Response(dream)
+
+#HTTP GET /v1/quote/contain_string
+
+#HTTP GET /v1/before_date/{date}
+
+#HTTP GET /v1/after_date/{date}
 
 
-    
-    
+#POST(id, User, current date, quote)
+#HTTP POST /v1/new_entry (data will be defined in the content body)
+
+#DELETE(Do based off primary key id)
+#HTTP POST /v1/delete_entry (data will be defined in the content body)
