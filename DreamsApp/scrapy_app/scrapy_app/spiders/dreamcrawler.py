@@ -1,6 +1,7 @@
 import scrapy
 import re
 from scrapy_app.items import DreamItem
+from datetime import date
 
 #Todo: transform this to CrawlSpider
 class DreamcrawlerSpider(scrapy.Spider):
@@ -8,7 +9,7 @@ class DreamcrawlerSpider(scrapy.Spider):
 
     def start_requests(self):
         urls = [
-            "https://www.dreambank.net/random_sample.cgi?series=b&min=50&max=300&n=5000"]
+            "https://www.dreambank.net/random_sample.cgi?series=b&min=10&max=50&n=30"]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
@@ -29,10 +30,19 @@ class DreamcrawlerSpider(scrapy.Spider):
 
     def parse(self, response):
         dream_item = DreamItem()
-        for date, quote in self.quote_generator(response.css('body span::text').getall()):
-            id,date_data,dream_string = self.generate_id_date_string(date,quote)
+        cleaned_list=[]
+        for data in response.css('body span::text').getall():
+            if "[BL]" in data or data.strip().startswith("(") or data.strip().startswith("["):
+                continue
+            cleaned_list.append(data)
+
+        for date, quote in self.quote_generator(cleaned_list):
+            id, date = date.split(" ")
+            id = id.replace("#", "").strip()
+            quote = re.sub("\(.*?\)|\[.*?\]", "", quote).strip()
+            date = re.sub(r'[()]', '', date.strip())
             dream_item['id'] = id
-            dream_item['date'] = date_data
-            dream_item['quote'] = dream_string
+            dream_item['date'] =  date
+            dream_item['quote'] = quote
             yield dream_item
 
