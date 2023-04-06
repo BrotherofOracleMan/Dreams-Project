@@ -5,6 +5,7 @@ from django_filters import rest_framework as filters
 from django.http import Http404
 from main.models import Dream
 from main.serializers import DreamSerializer
+import datetime
 
 #HTTP GET /v1/id/{id}
 class ListDreambyID(APIView):
@@ -51,6 +52,9 @@ class ListDreamByDate(generics.ListAPIView):
 
 #POST(id, User, current date, quote)
 #HTTP POST /v1/new_entry (data will be defined in the content body)
+class CreateDream(generics.CreateAPIView):
+    queryset = Dream.objects.all()
+    serializer_class = DreamSerializer
 
-#DELETE(Do based off primary key id)
-#HTTP POST /v1/delete_entry (data will be defined in the content body)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
