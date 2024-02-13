@@ -1,14 +1,11 @@
-from datetime import datetime, date
 
-import DreamsProjectV2.backend.models
 import models
-
+from datetime import datetime, date
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from models import Dream as ModelDream
-from schema import Dream as SchemaDream
-from typing import Optional
+from schema import Dream as SchemaDream, BeginAndLastDate
 from sqlalchemy import and_
 from sqlalchemy.orm.session import Session
 
@@ -37,11 +34,11 @@ def get_dreams_by_date_range(db, start_date: date, end_date: date):
 
 def get_dreams_by_dream_title_and_date(db, dream_title: str, start_date: date, end_date: date):
     return db.query(ModelDream).filter(and_(
-            ModelDream.dream_title == dream_title,
-            ModelDream.created >= start_date,
-            ModelDream.created <= end_date
-        )
+        ModelDream.dream_title == dream_title,
+        ModelDream.created >= start_date,
+        ModelDream.created <= end_date
     )
+    ).all()
 
 
 @app.get("/")
@@ -51,22 +48,51 @@ async def read_root():
 
 @app.get("/dreams")
 async def get_dream(dream: SchemaDream = None,
+                    date_request_info: BeginAndLastDate = None,
                     dream_title: str = None,
-                    begin_date: datetime = None,
-                    last_date: datetime = None):
+                    begin_date: date = None,
+                    last_date: date = None,
+                    db: Session = Depends(get_db)):
     # Do a validation to check if both the dream_title and begin date and last date are not empty
-    if not dream_title or not dream.dict():
-        raise HTTPException(status_code=400, detail="Request body or Query parameter 'dream' is missing or empty")
+    # if not dream_title or not dream.dict():
+    #    raise HTTPException(status_code=400, detail="Request body or Query parameter 'dream' is missing or empty")
 
     # For only query parameters
-    if dream.dict() and not dream_title:
-        pass
+    print(dream)
+    print(date_request_info)
 
-    # Do a filter based on the dream title first, then check if it's between the begin_date and last_date
-    # Make sure to first validate that begin date and last date are not empty.
-    # Do a filter between begin_date and last_date
+    if not dream and not date_request_info:
+        if dream_title and begin_date and last_date:
+            # checks if dream title exists
+            return get_dreams_by_dream_title_and_date(db, dream_title, begin_date, last_date)
+        elif begin_date and last_date:
+            # look for dreams between the beginning date and end date
+            return get_dreams_by_date_range(db, begin_date, last_date)
+        else:
+            raise HTTPException(status_code=422, detail="Using Query Parameters failed")
+    elif dream or date_request_info:
+        response_dict ={}
+        if dream:
+            response_dict["dream_title"] = dream.dream_title
+        if date_request_info:
+            response_dict["begin_date"] = date_request_info.begin_date
+            response_dict["end_date"] = date_request_info.end_date
 
-    return {"message": "get item by query parameter"}
+        if all(value is not None for field, value in response_dict.items()):
+            return get_dreams_by_dream_title_and_date(db,
+                                                      response_dict["dream_title"],
+                                                      response_dict["begin_date"],
+                                                      response_dict["end_date"]
+                                                      )
+        elif response_dict["begin_date"] and response_dict["end_date"]:
+            return get_dreams_by_date_range(db,
+                                            response_dict["begin_date"],
+                                            response_dict["end_date"]
+                                            )
+        else:
+            return HTTPException(status_code=422, detail="Incomplete Request Body")
+
+    raise HTTPException(status_code=400, detail="Query parameters is/are missing")
 
 
 # ToDo:create an API for updating a Dream from the DataBase

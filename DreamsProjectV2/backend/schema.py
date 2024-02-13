@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, date
+
 
 class Dream(BaseModel):
     dream_id: int
@@ -9,3 +10,8 @@ class Dream(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class BeginAndLastDate(BaseModel):
+    begin_date: date
+    last_date: date
