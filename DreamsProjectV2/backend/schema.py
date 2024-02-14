@@ -1,12 +1,13 @@
 from pydantic import BaseModel
 from datetime import datetime, date
+from typing import Optional
 
 
 class Dream(BaseModel):
-    dream_id: int
-    dream_title: str
-    dream_description: str
-    author_id: str
+    dream_id: Optional[int] = None
+    dream_title: Optional[str] = None
+    dream_description: Optional[str] = None
+    author_id: Optional[str] = None
 
     class Config:
         from_attributes = True

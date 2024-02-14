@@ -1,4 +1,3 @@
-
 import models
 from datetime import datetime, date
 from fastapi import FastAPI, Depends, HTTPException, status
@@ -53,47 +52,40 @@ async def get_dream(dream: SchemaDream = None,
                     begin_date: date = None,
                     last_date: date = None,
                     db: Session = Depends(get_db)):
-    # Do a validation to check if both the dream_title and begin date and last date are not empty
-    # if not dream_title or not dream.dict():
-    #    raise HTTPException(status_code=400, detail="Request body or Query parameter 'dream' is missing or empty")
+    if not dream_title and not dream.dict():
+        raise HTTPException(status_code=400, detail="Request body or Query parameter 'dream' is missing or empty")
 
-    # For only query parameters
-    print(dream)
-    print(date_request_info)
-
+    response_dict = {}
     if not dream and not date_request_info:
         if dream_title and begin_date and last_date:
-            # checks if dream title exists
             return get_dreams_by_dream_title_and_date(db, dream_title, begin_date, last_date)
         elif begin_date and last_date:
-            # look for dreams between the beginning date and end date
             return get_dreams_by_date_range(db, begin_date, last_date)
         else:
             raise HTTPException(status_code=422, detail="Using Query Parameters failed")
     elif dream or date_request_info:
-        response_dict ={}
         if dream:
             response_dict["dream_title"] = dream.dream_title
         if date_request_info:
             response_dict["begin_date"] = date_request_info.begin_date
-            response_dict["end_date"] = date_request_info.end_date
+            response_dict["last_date"] = date_request_info.last_date
 
-        if all(value is not None for field, value in response_dict.items()):
+        if "dream_title" in response_dict.keys() and all(value is not None for field, value in response_dict.items()):
             return get_dreams_by_dream_title_and_date(db,
                                                       response_dict["dream_title"],
                                                       response_dict["begin_date"],
-                                                      response_dict["end_date"]
+                                                      response_dict["last_date"]
                                                       )
-        elif response_dict["begin_date"] and response_dict["end_date"]:
+
+        elif response_dict["begin_date"] and response_dict["last_date"]:
             return get_dreams_by_date_range(db,
                                             response_dict["begin_date"],
-                                            response_dict["end_date"]
+                                            response_dict["last_date"]
                                             )
         else:
             return HTTPException(status_code=422, detail="Incomplete Request Body")
 
-    raise HTTPException(status_code=400, detail="Query parameters is/are missing")
-
+    raise HTTPException(status_code=400, detail="Query parameters or JSON Body is not correct")
 
 # ToDo:create an API for updating a Dream from the DataBase
 @app.put("/dreams")
