@@ -14,10 +14,17 @@ pipeline {
                sh 'printenv'
             }
         }
+
+        stage('Test'){
+            steps{
+                sh './gradlew check'
+            }
+        }
+
     }
     post{
         always{
-            echo 'This will always run'
+            junit 'build/reports/**/*.xml'
         }
         success{
             echo "This will only run if successful"
