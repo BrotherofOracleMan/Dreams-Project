@@ -2,12 +2,18 @@
 pipeline {
     agent { docker { image 'python:3.12.1-alpine3.19' } }
     stages {
-        stage('build') {
+        stage('Test') {
             steps {
-                retry(3){
-                    sh 'echo   "Hello World"'
-                }
+               sh 'echo "Fail!"; exit 1'
             }
+        }
+    }
+    post{
+        always{
+            echo 'This will always run'
+        }
+        success{
+            echo "This will only run if successful"
         }
     }
 }
